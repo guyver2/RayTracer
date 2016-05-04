@@ -157,14 +157,17 @@ int main(int argc, char const *argv[]) {
   // spot light on the ceiling
   cornellBox.addLight(new Spot(Vector3d(280, 540, 250), color(1, 0.9, 0.7)));
 
-
+  //rendering resolution
+  int SIZE_IMG = 2000;
 
   Camera cam(center, up, dir, 0.035, 0.025, 0.025);
-  Mat depthMap = cam.renderDepth(cornellBox, 2000, 2000);
-  imwrite("render.png", depthMap);
+  Mat depthMap = cam.renderDepth(cornellBox, SIZE_IMG, SIZE_IMG);
+  flip(depthMap, depthMap, 1);
+  imwrite("../depth.jpg", depthMap);
 
-  Mat colorImg = cam.renderDirect(cornellBox, 2000, 2000);
+  Mat colorImg = cam.renderDirect(cornellBox, SIZE_IMG, SIZE_IMG);
   cvtColor(colorImg, colorImg, CV_BGR2RGB);
-  imwrite("color.png", colorImg);
+  flip(colorImg, colorImg, 1);
+  imwrite("../color.jpg", colorImg);
   return 0;
 }
