@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (Ray)
 
-set ( CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -Wno-deprecated-register" )
+set ( CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O3" )
 
 find_package(OpenMP)
 if (OPENMP_FOUND)
@@ -22,11 +22,11 @@ file(GLOB RAY_SRC
      "camera.cpp"
      "plane.cpp"
      "scene.cpp"
+     "light.cpp"
 )
 
-find_package (Threads) # -> ${CMAKE_THREAD_LIBS_INIT}
 
 find_package( OpenCV REQUIRED )
 
 add_executable(Ray ${RAY_SRC})
-target_link_libraries (Ray ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries (Ray ${OpenCV_LIBS})

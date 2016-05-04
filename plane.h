@@ -1,12 +1,13 @@
 #ifndef PLANE_H
 #define PLANE_H
 
+class Plane;
+
 #include <Eigen/Dense>
 #include <vector>
 #include <string>
 #include "element.h"
-
-typedef Eigen::ParametrizedLine<double, 3> Line3d;
+#include "types.h"
 
 class Plane : public Element {
 private:
@@ -14,8 +15,9 @@ private:
   Eigen::Hyperplane<double,3> _plane;
 
 public:
-  Plane (std::vector<Eigen::Vector3d>, std::string);
-  virtual double intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &);
+  Plane (std::vector<Eigen::Vector3d>, std::string, color&);
+  virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &);
+  virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&);
   virtual ~Plane ();
 };
 

@@ -6,8 +6,7 @@
 
 using namespace Eigen;
 
-Scene::Scene(): _elements(std::vector<Element*>()) {
-
+Scene::Scene(): _elements(std::vector<Element*>()),_lights(std::vector<Light*>()) {
 }
 
 int Scene::addElt(Element* elt){
@@ -15,19 +14,26 @@ int Scene::addElt(Element* elt){
   return _elements.size();
 }
 
-Scene::~Scene (){
-  for (auto e : _elements) delete e;
+int Scene::addLight(Light* light){
+  _lights.push_back(light);
+  return _lights.size();
 }
 
-Vector3d Scene::intersect(const Line3d &line, const Vector3d &p0, const Vector3d &p1) const{
-  double res = -1;
+
+Scene::~Scene (){
+  for (auto e : _elements) delete e;
+  for (auto l : _lights) delete l;
+}
+
+intersection Scene::intersect(const Line3d &line, const Vector3d &p0, const Vector3d &p1) const{
+  intersection res;
   for (auto &e : _elements){
-    double d = e->intersect(line, p0, p1);
+    intersection it = e->intersect(line, p0, p1);
     //std::cout << e->_name << " " << d << std::endl;
-    if (d >= 0) {
-      if (res == -1 or res > d) res = d;
+    if (it.valid()) {
+      if (!res.valid() || res.depth() > it.depth()) res = it;
     }
   }
-  if (res == -1) res = 1500;
-  return res*((p1-p0).normalized()) + p1;
+  if (!res.valid()) return intersection();
+  else return res;
 };

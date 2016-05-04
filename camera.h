@@ -1,11 +1,14 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+class Camera;
+
 #include <iostream>
 #include <Eigen/Dense>
-#include "scene.h"
+#include <opencv2/opencv.hpp>
 
-typedef Eigen::ParametrizedLine<double, 3> Line3d;
+#include "scene.h"
+#include "types.h"
 
 class Camera {
 private:
@@ -21,7 +24,9 @@ private:
 public:
   Camera (Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d, double, double, double);
   virtual ~Camera ();
-  void render(const Scene&, int w, int h);
+  cv::Mat renderDepth(const Scene&, int, int);
+  cv::Mat renderDirect(const Scene&, int, int);
+  cv::Mat renderBounceOnce(const Scene &, int, int);
 };
 
 

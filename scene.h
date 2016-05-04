@@ -1,20 +1,25 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+class Scene;
+
 #include <vector>
 #include <Eigen/Dense>
 #include "element.h"
+#include "light.h"
+#include "types.h"
 
-typedef Eigen::ParametrizedLine<double, 3> Line3d;
 
 
 class Scene {
-private:
+public:
   std::vector<Element*> _elements;
+  std::vector<Light*> _lights;
 public:
   Scene();
   int addElt(Element*);
-  Eigen::Vector3d intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &) const;
+  int addLight(Light*);
+  intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &) const;
   virtual ~Scene ();
 };
 

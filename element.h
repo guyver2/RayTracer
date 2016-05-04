@@ -1,14 +1,20 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
+
+class Element;
+
 #include <Eigen/Dense>
 #include <string>
+#include "types.h"
 
-typedef Eigen::ParametrizedLine<double, 3> Line3d;
 
 class Element {
 public:
   std::string _name;
-  virtual double intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &)=0;
+  color _color;
+  virtual color col() {return _color;}
+  virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &)=0;
+  virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&)=0;
   virtual ~Element(){};
 };
 
