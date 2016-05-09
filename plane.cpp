@@ -5,7 +5,7 @@
 
 using namespace Eigen;
 
-Plane::Plane(std::vector<Vector3d> pts, std::string name, color& col) :
+Plane::Plane(std::vector<Vector3d> pts, std::string name, color col) :
              _points(pts){
   _name = name;
   _color = col;

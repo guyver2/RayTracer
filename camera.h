@@ -4,6 +4,7 @@
 class Camera;
 
 #include <iostream>
+#include <string>
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
 
@@ -23,6 +24,7 @@ private:
 
 public:
   Camera (Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d, double, double, double);
+  Camera (std::string);
   virtual ~Camera ();
   cv::Mat renderDepth(const Scene&, int, int);
   cv::Mat renderDirect(const Scene&, int, int);

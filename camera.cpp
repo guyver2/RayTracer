@@ -2,10 +2,16 @@
 #include "scene.h"
 #include <Eigen/Dense>
 #include <algorithm>
+#include <string>
 #include <opencv2/opencv.hpp>
+#include <iostream>
+#include <fstream>
+#include "json.h"
 
 using namespace Eigen;
 using namespace cv;
+using json = nlohmann::json;
+
 
 Camera::Camera (Vector3d center, Vector3d up,
         Vector3d dir, double f, double w, double h) :
@@ -14,6 +20,33 @@ Camera::Camera (Vector3d center, Vector3d up,
         _dir(dir),
         _f(f), _width(w), _height(h)
         {}
+
+Camera::Camera(std::string filename){
+  std::ifstream ifs(filename);
+  if (!ifs.is_open()) {
+    std::cerr << "Could not open file " << filename << std::endl;
+    return;
+  }
+  json dict;
+  ifs >> dict;
+  try{
+    json camdata = dict["camera"];
+    _f = camdata["focal"];
+    _width = camdata["width"];
+    _height = camdata["height"];
+    _center = Vector3d(camdata["position"][0], camdata["position"][1], camdata["position"][2]);
+    _dir = Vector3d(camdata["dir"][0], camdata["dir"][1], camdata["dir"][2]);
+    _up = Vector3d(camdata["up"][0], camdata["up"][1], camdata["up"][2]);
+  } catch (std::domain_error e) {
+    std::cerr << "Error while loading camera data from file: " << filename << std::endl;
+    _center = Vector3d(0,0,0);
+    _up = Vector3d(0,1,0);
+    _dir = Vector3d(0,0,1);
+    _f = 0.035;
+    _width = _height = 0.025;
+  }
+}
+
 
 Camera::~Camera(){}
 
