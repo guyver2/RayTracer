@@ -12,11 +12,6 @@ using namespace Eigen;
 using namespace std;
 using namespace cv;
 
-color WHITE = color(1,1,1);
-color RED = color(1,0,0);
-color GREEN = color(0,1,0);
-
-
 int main(int argc, char const *argv[]) {
 
   Scene cornellBox("../cornell_box.json");

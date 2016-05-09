@@ -11,8 +11,8 @@ class Element;
 class Element {
 public:
   std::string _name;
-  color _color;
-  virtual color col() {return _color;}
+  colorRGB _color;
+  virtual colorRGB col() {return _color;}
   virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &)=0;
   virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&)=0;
   virtual ~Element(){};

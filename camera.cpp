@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include "json.h"
 
 using namespace Eigen;
@@ -140,24 +141,29 @@ Mat Camera::renderDirect(const Scene &scene, int w, int h){
       Line3d line = Line3d::Through(_center, pix);
       intersection pt = scene.intersect(line, _center, pix);
       if (pt.valid()){
-        Spot* spot = (Spot*)scene._lights[0];
-        //check if the spot and the origin point are on the same size of the
-        // supporting plane of the intersection
-        bool sameSide = pt.element()->sameSide(_center, spot->position());
-        // check if the spot sees the intersection
-        bool sees = (sameSide && spot->sees(pt.point(), scene));
-        if (sees){
-            double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
-            color resCol = spot->col()*pt.col()*dist;
-            colorImg[3*(j*w+i)] = 255*resCol.r;
-            colorImg[3*(j*w+i)+1] = 255*resCol.g;
-            colorImg[3*(j*w+i)+2] = 255*resCol.b;
-          } else {
-            double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
-            colorImg[3*(j*w+i)] = 255*dist/1.5;
-            colorImg[3*(j*w+i)+1] = 255*dist/1.5;
-            colorImg[3*(j*w+i)+2] = 255*dist/1.5;
-          }
+        colorRGB resCol(0,0,0);
+        for (const auto l : scene._lights){
+          Spot* spot = (Spot*)l;
+          //check if the spot and the origin point are on the same size of the
+          // supporting plane of the intersection
+          bool sameSide = pt.element()->sameSide(_center, spot->position());
+          // check if the spot sees the intersection
+          bool sees = (sameSide && spot->sees(pt.point(), scene));
+          if (sees){
+              double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
+              auto tmp = spot->col()*pt.col()*dist;
+              resCol.r = resCol.r + tmp.r;
+              resCol.g = resCol.g + tmp.g;
+              resCol.b = resCol.b + tmp.b;
+
+            } else {
+              //double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
+            }
+        }
+        double d = scene._lights.size();
+        colorImg[3*(j*w+i)] = fmin(255,255*resCol.r/d);
+        colorImg[3*(j*w+i)+1] = fmin(255,255*resCol.g/d);
+        colorImg[3*(j*w+i)+2] = fmin(255,255*resCol.b/d);
 
       } else {
         colorImg[3*(j*w+i)] = 0;

@@ -19,11 +19,11 @@ public:
 class Spot : public Light {
 private:
   Eigen::Vector3d _position;
-  color _color;
+  colorRGB _color;
 public:
-  Spot (const Eigen::Vector3d&, const color&);
+  Spot (const Eigen::Vector3d&, const colorRGB&);
   Eigen::Vector3d& position();
-  color col();
+  colorRGB col();
   virtual bool sees(const Eigen::Vector3d&, const Scene&);
   virtual ~Spot();
 

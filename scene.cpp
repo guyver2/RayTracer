@@ -29,7 +29,10 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
       if (lightData["type"] == "spot") {
         auto pos = lightData["position"];
         auto col = lightData["color"];
-        addLight(new Spot(Vector3d(pos[0], pos[1], pos[2]), color(col[0], col[1], col[2])));
+        bool onOff = lightData["status"];
+        if (onOff){
+          addLight(new Spot(Vector3d(pos[0], pos[1], pos[2]), colorRGB(col[0], col[1], col[2])));
+        }
       } else {
         std::cout << "Cannot handle light type [" << lightData["type"] << "] yet." << std::endl;
       }
@@ -44,7 +47,7 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
         for (const auto &pt : ptsdata) {
           pts.push_back(Vector3d(pt[0], pt[1], pt[2]));
         }
-        addElt(new Plane(pts, name, color(col[0], col[1], col[2])));
+        addElt(new Plane(pts, name, colorRGB(col[0], col[1], col[2])));
       } else {
         std::cout << "Cannot handle element type [" << eltData["type"] << "] yet." << std::endl;
       }

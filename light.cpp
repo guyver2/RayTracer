@@ -1,7 +1,7 @@
 #include "light.h"
 
 
-Spot::Spot(const Eigen::Vector3d& pos, const color& c) : _position(pos), _color(c){
+Spot::Spot(const Eigen::Vector3d& pos, const colorRGB& c) : _position(pos), _color(c){
 
 };
 
@@ -9,7 +9,7 @@ Eigen::Vector3d& Spot::position() {
   return _position;
 }
 
-color Spot::col() {
+colorRGB Spot::col() {
   return _color;
 }
 

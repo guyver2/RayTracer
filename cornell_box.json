@@ -11,10 +11,25 @@
 
   "lights":[
     {
+      "status": true,
       "name": "ceiling light",
       "type": "spot",
       "position": [280,540, 250],
       "color": [1,0.9,0.7]
+    },
+    {
+      "status": true,
+      "name": "left light",
+      "type": "spot",
+      "position": [10, 250, 150],
+      "color": [0.4,0.4,0.9]
+    },
+    {
+      "status": true,
+      "name": "right light",
+      "type": "spot",
+      "position": [550, 250, 150],
+      "color": [0.9,0.4,0.4]
     }
   ],
 

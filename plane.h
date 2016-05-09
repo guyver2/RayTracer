@@ -15,7 +15,7 @@ private:
   Eigen::Hyperplane<double,3> _plane;
 
 public:
-  Plane (std::vector<Eigen::Vector3d>, std::string, color);
+  Plane (std::vector<Eigen::Vector3d>, std::string, colorRGB);
   virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &);
   virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&);
   virtual ~Plane ();
