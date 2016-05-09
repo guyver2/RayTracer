@@ -25,6 +25,8 @@ Basic Ray tracing software. Not much functionalities now but should get better o
 	Antoine Letouzey -- [antoine.letouzey@gmail.com](antoine.letouzey@gmail.com)
 - Licence:
 	LGPL
+- json.h:
+	Copyright (c) 2013-2016 Niels Lohmann -- [https://github.com/nlohmann/json](https://github.com/nlohmann/json)
 
 # Reference image:
 First, not my result but the reference image I'm targeting
