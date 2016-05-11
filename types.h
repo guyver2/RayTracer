@@ -20,6 +20,7 @@ class colorRGB {
     colorRGB operator* (const colorRGB &x) { return colorRGB(r*x.r, g*x.g, b*x.b); }
     colorRGB operator+ (const colorRGB &x) { return colorRGB(r+x.r, g+x.g, b+x.b); }
     colorRGB operator* (const double x) { return colorRGB(r*x, g*x, b*x); }
+    colorRGB operator/ (const double x) { return colorRGB(r/x, g/x, b/x); }
 };
 
 

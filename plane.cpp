@@ -41,3 +41,11 @@ bool Plane::sameSide(const Vector3d &p0, const Vector3d &p1){
   // check for same sign
   return ((d0<0) == (d1<0));
 }
+
+bool Plane::side(const Vector3d &p){
+  return _plane.signedDistance(p) > 0;
+}
+
+Eigen::Vector3d Plane::normal(){
+  return _plane.normal();
+}

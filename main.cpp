@@ -1,6 +1,8 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include <cstdlib>
+#include <ctime>
 #include "camera.h"
 #include "scene.h"
 #include "plane.h"
@@ -13,11 +15,11 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char const *argv[]) {
-
+  srand(time(NULL));
   Scene cornellBox("../cornell_box.json");
 
   //rendering resolution
-  int SIZE_IMG = 2000;
+  int SIZE_IMG = 212;
 
   Camera cam("../cornell_box.json");
 
@@ -29,5 +31,11 @@ int main(int argc, char const *argv[]) {
   cvtColor(colorImg, colorImg, CV_BGR2RGB);
   flip(colorImg, colorImg, 1);
   imwrite("../color.jpg", colorImg);
+
+  Mat bounceImg = cam.renderBounceOnce(cornellBox, SIZE_IMG, SIZE_IMG);
+  cvtColor(bounceImg, bounceImg, CV_BGR2RGB);
+  flip(bounceImg, bounceImg, 1);
+  imwrite("../color_bounce.jpg", bounceImg);
+
   return 0;
 }

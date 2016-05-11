@@ -18,6 +18,8 @@ public:
   Plane (std::vector<Eigen::Vector3d>, std::string, colorRGB);
   virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &);
   virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&);
+  virtual bool side(const Eigen::Vector3d &);
+  virtual Eigen::Vector3d normal();
   virtual ~Plane ();
 };
 

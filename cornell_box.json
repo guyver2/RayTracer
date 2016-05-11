@@ -18,14 +18,14 @@
       "color": [1,0.9,0.7]
     },
     {
-      "status": true,
+      "status": false,
       "name": "left light",
       "type": "spot",
       "position": [10, 250, 150],
       "color": [0.4,0.4,0.9]
     },
     {
-      "status": true,
+      "status": false,
       "name": "right light",
       "type": "spot",
       "position": [550, 250, 150],
