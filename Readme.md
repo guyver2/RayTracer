@@ -34,6 +34,12 @@ First, not my result but the reference image I'm targeting
 ![Ref](http://www.graphics.cornell.edu/online/box/box.jpg)
 
 # Results so far:
+
+Color image with monte carlo sampling for ray bouncing and area light.
+
+![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce_montecarlo.jpg)
+
+
 Color image with ray bouncing once in 100 random directions
 
 ![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce.jpg)
@@ -56,3 +62,5 @@ Every rendering project is subject to some amazing failures, here is my modest c
 ![error](https://antoine.sxbn.org/pages/projects/ray/freak_show/03_color_error1.png)
 
 ![error](https://antoine.sxbn.org/pages/projects/ray/freak_show/3lights.png)
+
+![error](https://antoine.sxbn.org/pages/projects/ray/freak_show/right_blast.png)
