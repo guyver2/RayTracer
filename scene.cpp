@@ -33,6 +33,17 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
         if (onOff){
           addLight(new Spot(Vector3d(pos[0], pos[1], pos[2]), colorRGB(col[0], col[1], col[2])));
         }
+      } else if (lightData["type"] == "area") {
+        auto ptsdata = lightData["pts"];
+        std::vector<Vector3d> pts;
+        for (const auto &pt : ptsdata) {
+          pts.push_back(Vector3d(pt[0], pt[1], pt[2]));
+        }
+        auto col = lightData["color"];
+        bool onOff = lightData["status"];
+        if (onOff){
+          addLight(new AreaLight(pts, colorRGB(col[0], col[1], col[2])));
+        }
       } else {
         std::cout << "Cannot handle light type [" << lightData["type"] << "] yet." << std::endl;
       }
@@ -54,6 +65,10 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
     }
 
   } catch (std::domain_error e) {
+    std::cerr << "Error while loading scene data from file: " << filename << std::endl;
+    _elements = std::vector<Element*>();
+    _lights = std::vector<Light*>();
+  } catch (std::invalid_argument e) {
     std::cerr << "Error while loading scene data from file: " << filename << std::endl;
     _elements = std::vector<Element*>();
     _lights = std::vector<Light*>();
@@ -79,13 +94,23 @@ Scene::~Scene (){
   for (auto l : _lights) delete l;
 }
 
-intersection Scene::intersect(const Line3d &line, const Vector3d &p0, const Vector3d &p1) const{
+intersection Scene::intersect(const Line3d &line, const Vector3d &p0, const Vector3d &p1, bool includeLights) const{
   intersection res;
+  // intersect physical object
   for (auto &e : _elements){
     intersection it = e->intersect(line, p0, p1);
     //std::cout << e->_name << " " << d << std::endl;
     if (it.valid()) {
       if (!res.valid() || res.depth() > it.depth()) res = it;
+    }
+  }
+  if (includeLights){
+    // intersect area lights
+    for (auto &l : _lights){
+      intersection it = l->intersect(line, p0, p1);
+      if (it.valid()) {
+        if (!res.valid() || res.depth() > it.depth()) res = it;
+      }
     }
   }
   if (!res.valid()) return intersection();

@@ -22,7 +22,7 @@ public:
   Scene(std::string);
   int addElt(Element*);
   int addLight(Light*);
-  intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &) const;
+  intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &, bool) const;
   virtual ~Scene ();
 };
 

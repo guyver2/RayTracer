@@ -18,14 +18,14 @@ Plane::~Plane(){}
 intersection Plane::intersect(const Line3d &line, const Vector3d &p0, const Vector3d &p1){
   double d = line.intersection(_plane);
   // check if intersection is not at infinity nor extremly close to the original point
-  if (std::isfinite(d) && (d>0.01)) {
+  if (std::isfinite(d) && (d>0.0001)) {
     // check wether the point lies INSIDE the plane
     Vector3d m = d*((p1-p0).normalized()) + p0;
     double u = (m - _points[0]).dot(_points[1] - _points[0]);
     double v = (m - _points[0]).dot(_points[3] - _points[0]);
     if ((0 <= u) && (u <= pow((_points[1] - _points[0]).norm(),2)) &&
         (0 <= v) && (v <= pow((_points[3] - _points[0]).norm(),2))) {
-      return intersection(true, m, d, &_color, this);
+      return intersection(true, p0, m, p1, d, &_color, this);
     } else {
        return intersection();
     }

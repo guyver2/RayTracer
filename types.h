@@ -26,20 +26,25 @@ class colorRGB {
 
 class intersection {
   private:
-    Eigen::Vector3d _pt;
     bool _valid;
+    Eigen::Vector3d _from;
+    Eigen::Vector3d _pt;
+    Eigen::Vector3d _to;
     double _depth;
     colorRGB* _color;
     Element* _element;
   public:
-    intersection(): _valid(false), _pt(Eigen::Vector3d(0,0,0)), _depth(-1),
-                    _color(NULL), _element(NULL){}
-    intersection (bool v, Eigen::Vector3d p, double d, colorRGB* col, Element* elt) :
-                  _valid(v), _pt(p), _depth(d), _color(col), _element(elt){}
+    intersection(): _valid(false), _from(Eigen::Vector3d(0,0,0)),
+                    _pt(Eigen::Vector3d(0,0,0)), _to(Eigen::Vector3d(0,0,0)),
+                    _depth(-1), _color(NULL), _element(NULL){}
+    intersection (bool v, Eigen::Vector3d p0, Eigen::Vector3d p, Eigen::Vector3d p1, double d, colorRGB* col, Element* elt) :
+                  _valid(v), _from(p0), _pt(p), _to(p1), _depth(d), _color(col), _element(elt){}
     bool valid(){ return _valid; }
     colorRGB col(){ return *_color; }
     Element* element() { return _element;}
     Eigen::Vector3d &point() { return _pt;}
+    Eigen::Vector3d &fromPoint() { return _from;}
+    Eigen::Vector3d &toPoint() { return _to;}
     double depth() {return _depth;}
 };
 

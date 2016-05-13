@@ -15,9 +15,12 @@ using namespace Eigen;
 using json = nlohmann::json;
 
 
-Vector3d hemisphereRandomRay(){
-  const float u1 = (float)rand() / RAND_MAX;
-  const float u2 = (float)rand() / RAND_MAX;
+Vector3d hemisphereRandomRay(float u1=-1, float u2=-1){
+  if (u1<0 || u2<0 ) {
+    u1 = (float)rand() / RAND_MAX;
+    u2 = (float)rand() / RAND_MAX;
+  }
+
   const float r = sqrt(u1);
   const float theta = 2 * M_PI * u2;
 
@@ -103,7 +106,7 @@ cv::Mat Camera::renderDepth(const Scene &scene, int w, int h){
     for (size_t j = 0; j < h; j++) {
       Vector3d pix = screen_ori + Vector3d(dx*i, -dy*j, 0);
       Line3d line = Line3d::Through(_center, pix);
-      intersection pt = scene.intersect(line, _center, pix);
+      intersection pt = scene.intersect(line, _center, pix, false);
       if (pt.valid()) depth[j*w+i] = pt.depth();
       else depth[j*w+i] = 1500;
     }
@@ -120,21 +123,18 @@ cv::Mat Camera::renderDepth(const Scene &scene, int w, int h){
 
 std::pair<colorRGB, intersection> singleRay(const Vector3d &p0, const Vector3d &p1, const Scene &scene){
   Line3d line = Line3d::Through(p0, p1);
-  intersection pt = scene.intersect(line, p0, p1);
+  intersection pt = scene.intersect(line, p0, p1, true);
   colorRGB resCol(0,0,0);
   if (pt.valid()){
+    if (pt.element() == NULL) { // no physical element associated, means we hit a light
+      return std::make_pair(pt.col(), pt);
+    }
     // shoot direct shadow rays
     for (const auto l : scene._lights){
-      Spot* spot = (Spot*)l;
-      //check if the spot and the origin point are on the same size of the
-      // supporting plane of the intersection
-      bool sameSide = pt.element()->sameSide(p0, spot->position());
-      // check if the spot sees the intersection
-      bool sees = (sameSide && spot->sees(pt.point(), scene));
-      if (sees){
-          //double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
-          resCol = resCol + spot->col()*pt.col();//*dist;
-        }
+      //Spot* spot = (Spot*)l;
+      float sees = l->sees(pt, scene);
+      //double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
+      resCol = resCol + l->col()*pt.col()*sees;//*dist;
     }
     double d = scene._lights.size();
     resCol = resCol / d;
@@ -158,26 +158,32 @@ cv::Mat Camera::renderBounceOnce(const Scene &scene, int w, int h){
       colorRGB primaryCol = res.first;
       intersection pt = res.second;
       if (pt.valid()){
-        // shoot refracted rays in random directions around surface normal
-        // and flip normal if we're looking at the object from 'the other side'
-        Vector3d normal = pt.element()->normal();
-        if (!pt.element()->side(_center)){
-          normal *= -1;
-        }
-        Matrix3d rot = NormalToRotation(normal);
-        colorRGB secondaryCol(0,0,0);
-        int nbRays = 1500;
-        #pragma omp parallel for
-        for (size_t i = 0; i < nbRays; i++) {
-          Vector3d randomRay = rot*hemisphereRandomRay();
-          randomRay += pt.point();
+        if (pt.element() == NULL) {
+          resCol = primaryCol;
+        } else {
+          // shoot refracted rays in random directions around surface normal
+          // and flip normal if we're looking at the object from 'the other side'
+          Vector3d normal = pt.element()->normal();
+          if (!pt.element()->side(_center)){
+            normal *= -1;
+          }
+          Matrix3d rot = NormalToRotation(normal);
+          colorRGB secondaryCol(0,0,0);
+          int nbRays = 10;
+          #pragma omp parallel for
+          for (size_t i = 0; i < (nbRays*nbRays); i++) {
+            float u = (1 + i/nbRays)/float(nbRays) + (1./nbRays)*rand()/(float)RAND_MAX;
+            float v = (1+ i%nbRays)/float(nbRays) + (1./nbRays)*rand()/(float)RAND_MAX;
+            Vector3d randomRay = rot*hemisphereRandomRay(u, v);
+            randomRay += pt.point();
 
-          std::pair<colorRGB, intersection> resRay = singleRay(pt.point(), randomRay, scene);
-          secondaryCol = secondaryCol + resRay.first;
+            std::pair<colorRGB, intersection> resRay = singleRay(pt.point(), randomRay, scene);
+            secondaryCol = secondaryCol + resRay.first;
+          }
+          secondaryCol = secondaryCol / (nbRays*nbRays);
+          resCol = (primaryCol + pt.col()*secondaryCol)/2;
         }
-        secondaryCol = secondaryCol / nbRays;
-        resCol = (primaryCol + pt.col()*secondaryCol)/2;
-      }
+    }
 
       colorImg[3*(j*w+i)] = fmin(255,255*resCol.r);
       colorImg[3*(j*w+i)+1] = fmin(255,255*resCol.g);

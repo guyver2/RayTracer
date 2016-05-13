@@ -1,0 +1,62 @@
+{
+  "name": "Cornell Box",
+  "camera": {
+    "position": [ 278, 273, -800],
+    "up": [0, 1, 0],
+    "dir":    [0, 0, 1],
+    "focal": 0.035,
+    "width": 0.025,
+    "height": 0.025
+  },
+
+  "lights":[
+    {
+      "status": false,
+      "name": "ceiling light",
+      "type": "spot",
+      "position": [280,540, 250],
+      "color": [1,0.9,0.7]
+    },
+    {
+      "status": false,
+      "name": "left light",
+      "type": "spot",
+      "position": [10, 250, 150],
+      "color": [0.4,0.4,0.9]
+    },
+    {
+      "status": false,
+      "name": "right light",
+      "type": "spot",
+      "position": [550, 250, 150],
+      "color": [0.9,0.4,0.4]
+    },
+    {
+      "status": true,
+      "name": "Area light",
+      "type": "area",
+      "pts": [
+        [213.0, 548.0, 227.0],
+        [213.0, 548.0, 332.0],
+        [343.0, 548.0, 332.0],
+        [343.0,  548.0, 227.0]
+      ],
+      "color": [1,1,1]
+    }
+
+  ],
+
+  "elements":[
+    {
+      "type":"quad",
+      "name":"tb4",
+      "color": [1,1,1],
+      "pts": [
+        [265.0,   0.0, 296.0],
+        [265.0, 330.0, 296.0],
+        [423.0, 330.0, 247.0],
+        [423.0,   0.0, 247.0]
+      ]
+    }
+  ]
+}

@@ -9,8 +9,14 @@ class Spot;
 #include "types.h"
 
 class Light {
+protected:
+  colorRGB _color;
+  int _type;
 public:
-  virtual bool sees(const Eigen::Vector3d&, const Scene&)=0;
+  virtual float sees(intersection&, const Scene&)=0;
+  virtual colorRGB col() { return _color; }
+  virtual int type() {return _type; }
+  virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &) { return intersection();}
   virtual ~Light (){};
 
 };
@@ -19,14 +25,27 @@ public:
 class Spot : public Light {
 private:
   Eigen::Vector3d _position;
-  colorRGB _color;
 public:
   Spot (const Eigen::Vector3d&, const colorRGB&);
   Eigen::Vector3d& position();
-  colorRGB col();
-  virtual bool sees(const Eigen::Vector3d&, const Scene&);
+  virtual float sees(intersection&, const Scene&);
   virtual ~Spot();
 
+};
+
+
+
+class AreaLight : public Light {
+private:
+  std::vector<Eigen::Vector3d> _points;
+  Eigen::Hyperplane<double,3> _plane;
+  Eigen::Vector3d _u;
+  Eigen::Vector3d _v;
+public:
+  AreaLight (std::vector<Eigen::Vector3d>, colorRGB);
+  virtual ~AreaLight();
+  virtual float sees(intersection&, const Scene&);
+  virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &);
 };
 
 

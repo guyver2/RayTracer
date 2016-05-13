@@ -1,5 +1,9 @@
 color.jpg
+color.png
 depth.jpg
+depth.png
+color_bounce.jpg
+color_bounce.png
 build/
 results/
 
