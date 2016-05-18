@@ -1,5 +1,6 @@
 #include "element.h"
 #include "plane.h"
+#include "sphere.h"
 #include "scene.h"
 #include <vector>
 #include <Eigen/Dense>
@@ -40,9 +41,10 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
           pts.push_back(Vector3d(pt[0], pt[1], pt[2]));
         }
         auto col = lightData["color"];
+        int sampling = lightData["sampling"];
         bool onOff = lightData["status"];
         if (onOff){
-          addLight(new AreaLight(pts, colorRGB(col[0], col[1], col[2])));
+          addLight(new AreaLight(pts, colorRGB(col[0], col[1], col[2]), sampling));
         }
       } else {
         std::cout << "Cannot handle light type [" << lightData["type"] << "] yet." << std::endl;
@@ -50,6 +52,8 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
     }
     // load elements
     for (const auto &eltData : dict["elements"]){
+      bool onOff = eltData["status"];
+      if (!onOff) continue;
       if (eltData["type"] == "quad") {
         auto ptsdata = eltData["pts"];
         auto col = eltData["color"];
@@ -59,6 +63,13 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
           pts.push_back(Vector3d(pt[0], pt[1], pt[2]));
         }
         addElt(new Plane(pts, name, colorRGB(col[0], col[1], col[2])));
+      } else if (eltData["type"] == "sphere") {
+        auto col = eltData["color"];
+        std::string name = eltData["name"];
+        auto centerData = eltData["center"];
+        float radius = eltData["radius"];
+        Vector3d center(centerData[0], centerData[1], centerData[2]);
+        addElt(new Sphere(center, radius, name, colorRGB(col[0], col[1], col[2])));
       } else {
         std::cout << "Cannot handle element type [" << eltData["type"] << "] yet." << std::endl;
       }

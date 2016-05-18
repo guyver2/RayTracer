@@ -21,6 +21,7 @@ file(GLOB RAY_SRC
      "main.cpp"
      "camera.cpp"
      "plane.cpp"
+     "sphere.cpp"
      "scene.cpp"
      "light.cpp"
 )

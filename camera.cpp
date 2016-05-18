@@ -57,11 +57,11 @@ Matrix3d NormalToRotation(Vector3d normal) {
 
 
 Camera::Camera (Vector3d center, Vector3d up,
-        Vector3d dir, double f, double w, double h) :
+        Vector3d dir, double f, double w, double h, int subrays) :
         _center(center),
         _up(up),
         _dir(dir),
-        _f(f), _width(w), _height(h)
+        _f(f), _width(w), _height(h), _subrays(subrays)
         {}
 
 Camera::Camera(std::string filename){
@@ -77,6 +77,7 @@ Camera::Camera(std::string filename){
     _f = camdata["focal"];
     _width = camdata["width"];
     _height = camdata["height"];
+    _subrays = camdata["subrays"];
     _center = Vector3d(camdata["position"][0], camdata["position"][1], camdata["position"][2]);
     _dir = Vector3d(camdata["dir"][0], camdata["dir"][1], camdata["dir"][2]);
     _up = Vector3d(camdata["up"][0], camdata["up"][1], camdata["up"][2]);
@@ -129,6 +130,7 @@ std::pair<colorRGB, intersection> singleRay(const Vector3d &p0, const Vector3d &
     if (pt.element() == NULL) { // no physical element associated, means we hit a light
       return std::make_pair(pt.col(), pt);
     }
+    resCol = pt.col()*0.2;
     // shoot direct shadow rays
     for (const auto l : scene._lights){
       //Spot* spot = (Spot*)l;
@@ -148,10 +150,12 @@ cv::Mat Camera::renderBounceOnce(const Scene &scene, int w, int h){
   double dy = _height/h;
   std::vector<char> colorImg(w*h*3,0);
   Vector3d screen_ori(_center+Vector3d(-_width/2,_height/2, _f));
+  int nbpix = 0;
   #pragma omp parallel for
   for (size_t i = 0; i < w; i++) {
     #pragma omp parallel for
     for (size_t j = 0; j < h; j++) {
+      //std::cout << "pix " << nbpix++ << "/" << w*h << std::endl;
       colorRGB resCol(0,0,0);
       Vector3d pix = screen_ori + Vector3d(dx*i, -dy*j, 0);
       std::pair<colorRGB, intersection> res = singleRay(_center, pix, scene);
@@ -163,24 +167,23 @@ cv::Mat Camera::renderBounceOnce(const Scene &scene, int w, int h){
         } else {
           // shoot refracted rays in random directions around surface normal
           // and flip normal if we're looking at the object from 'the other side'
-          Vector3d normal = pt.element()->normal();
+          Vector3d normal = pt.element()->normal(pt.point());
           if (!pt.element()->side(_center)){
             normal *= -1;
           }
           Matrix3d rot = NormalToRotation(normal);
           colorRGB secondaryCol(0,0,0);
-          int nbRays = 10;
           #pragma omp parallel for
-          for (size_t i = 0; i < (nbRays*nbRays); i++) {
-            float u = (1 + i/nbRays)/float(nbRays) + (1./nbRays)*rand()/(float)RAND_MAX;
-            float v = (1+ i%nbRays)/float(nbRays) + (1./nbRays)*rand()/(float)RAND_MAX;
+          for (size_t i = 0; i < (_subrays*_subrays); i++) {
+            float u = (1 + i/_subrays)/float(_subrays) + (1./_subrays)*rand()/(float)RAND_MAX;
+            float v = (1+ i%_subrays)/float(_subrays) + (1./_subrays)*rand()/(float)RAND_MAX;
             Vector3d randomRay = rot*hemisphereRandomRay(u, v);
             randomRay += pt.point();
 
             std::pair<colorRGB, intersection> resRay = singleRay(pt.point(), randomRay, scene);
             secondaryCol = secondaryCol + resRay.first;
           }
-          secondaryCol = secondaryCol / (nbRays*nbRays);
+          secondaryCol = secondaryCol / (_subrays*_subrays);
           resCol = (primaryCol + pt.col()*secondaryCol)/2;
         }
     }

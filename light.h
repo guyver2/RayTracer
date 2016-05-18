@@ -41,8 +41,9 @@ private:
   Eigen::Hyperplane<double,3> _plane;
   Eigen::Vector3d _u;
   Eigen::Vector3d _v;
+  int _sampling;
 public:
-  AreaLight (std::vector<Eigen::Vector3d>, colorRGB);
+  AreaLight (std::vector<Eigen::Vector3d>, colorRGB, int);
   virtual ~AreaLight();
   virtual float sees(intersection&, const Scene&);
   virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &);

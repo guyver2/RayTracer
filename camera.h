@@ -19,11 +19,12 @@ private:
   double _f;
   double _width;
   double _height;
+  int _subrays;
 
 
 
 public:
-  Camera (Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d, double, double, double);
+  Camera (Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d, double, double, double, int);
   Camera (std::string);
   virtual ~Camera ();
   cv::Mat renderDepth(const Scene&, int, int);

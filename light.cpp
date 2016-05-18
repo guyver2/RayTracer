@@ -43,7 +43,8 @@ float Spot::sees(intersection& it, const Scene& scene){
 // AREA LIGHT
 //------------------------------------------------------------------
 
-AreaLight::AreaLight(std::vector<Vector3d> pts, colorRGB c) : _points(pts){
+AreaLight::AreaLight(std::vector<Vector3d> pts, colorRGB c, int sampling)
+                     : _points(pts), _sampling(sampling) {
   _color = c;
   _type = 1;
   _plane = Hyperplane<double,3>::Through( _points[0],_points[1],_points[2]);
@@ -61,11 +62,10 @@ float AreaLight::sees(intersection& it, const Scene& scene){
   Vector3d &from = it.fromPoint();
   float res = 0;
   // sample N random points on the light and then shoot rays from the point
-  int N = 10;
-  for (size_t i = 0; i < N*N; i++) {
+  for (size_t i = 0; i < _sampling*_sampling; i++) {
     // grid random sampling
-    float u = (i/N)/(float)N + ((0.5/N) * rand()) / RAND_MAX;
-    float v = (i%N)/(float)N + ((0.5/N) * rand()) / RAND_MAX;
+    float u = (i/_sampling)/(float)_sampling + ((0.5/_sampling) * rand()) / RAND_MAX;
+    float v = (i%_sampling)/(float)_sampling + ((0.5/_sampling) * rand()) / RAND_MAX;
 
 
     Vector3d lp = _points[0] + u*_u +v*_v; // random light source position on area
@@ -78,7 +78,7 @@ float AreaLight::sees(intersection& it, const Scene& scene){
       if (!lit.valid() || lit.depth() > dist) res+=1;
     }
   }
-  return res/(N*N);
+  return res/(_sampling*_sampling);
  }
 
 

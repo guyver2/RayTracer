@@ -46,6 +46,7 @@ bool Plane::side(const Vector3d &p){
   return _plane.signedDistance(p) > 0;
 }
 
-Eigen::Vector3d Plane::normal(){
+// assumes p is ON the plane
+Eigen::Vector3d Plane::normal(const Eigen::Vector3d &p){
   return _plane.normal();
 }

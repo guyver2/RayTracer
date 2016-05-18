@@ -16,7 +16,7 @@ public:
   virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &)=0;
   virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&)=0;
   virtual bool side(const Eigen::Vector3d &)=0;
-  virtual Eigen::Vector3d normal()=0;
+  virtual Eigen::Vector3d normal(const Eigen::Vector3d &)=0;
   virtual ~Element(){};
 };
 

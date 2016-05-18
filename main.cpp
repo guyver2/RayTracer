@@ -21,26 +21,30 @@ int main(int argc, char const *argv[]) {
 
   //rendering resolution
   int SIZE_IMG = 1024;
+  std::string FILE = "../mini_cornell.json";
+  //std::string FILE = "../cornell_box.json";
   if (argc > 1) {
-      SIZE_IMG = atoi(argv[1]);
+      FILE = std::string(argv[1]);
+      if (argc > 2) SIZE_IMG = atoi(argv[2]);
   }
 
   srand(time(NULL));
-  //std::string FILE = "../mini_cornell.json";
-  std::string FILE = "../cornell_box.json";
   // load assets
   Scene cornellBox(FILE);
   Camera cam(FILE);
 
-  //Mat depthMap = cam.renderDepth(cornellBox, SIZE_IMG, SIZE_IMG);
-  //flip(depthMap, depthMap, 1);
-  //imwrite("../depth.jpg", depthMap);
+  //*
+  Mat depthMap = cam.renderDepth(cornellBox, SIZE_IMG, SIZE_IMG);
+  flip(depthMap, depthMap, 1);
+  imwrite("../depth.jpg", depthMap);
+  /**/
 
+  //*
   Mat colorImg = cam.renderDirect(cornellBox, SIZE_IMG, SIZE_IMG);
   cvtColor(colorImg, colorImg, CV_BGR2RGB);
   flip(colorImg, colorImg, 1);
   imwrite("../color.png", colorImg);
-
+  /**/
 
   //*
   Mat bounceImg = cam.renderBounceOnce(cornellBox, SIZE_IMG, SIZE_IMG);
