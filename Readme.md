@@ -35,6 +35,10 @@ First, not my result but the reference image I'm targeting
 
 # Results so far:
 
+Color image with monte carlo sampling, spherical objects and reflections (ball and back wall).
+
+![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce_mirror.jpg)
+
 Color image with monte carlo sampling for ray bouncing and area light.
 
 ![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce_montecarlo.jpg)
@@ -64,3 +68,5 @@ Every rendering project is subject to some amazing failures, here is my modest c
 ![error](https://antoine.sxbn.org/pages/projects/ray/freak_show/3lights.png)
 
 ![error](https://antoine.sxbn.org/pages/projects/ray/freak_show/right_blast.png)
+
+![error](https://antoine.sxbn.org/pages/projects/ray/freak_show/mirrorseverywhere.jpg)
