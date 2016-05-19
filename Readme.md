@@ -39,6 +39,10 @@ Color image with monte carlo sampling, spherical objects and reflections (ball a
 
 ![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce_mirror.jpg)
 
+Color image with monte carlo sampling and spherical objects.
+
+![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce_ball.jpg)
+
 Color image with monte carlo sampling for ray bouncing and area light.
 
 ![Rendering](https://antoine.sxbn.org/pages/projects/ray/color_bounce_montecarlo.jpg)
