@@ -62,6 +62,7 @@ float AreaLight::sees(intersection& it, const Scene& scene){
   Vector3d &from = it.fromPoint();
   float res = 0;
   // sample N random points on the light and then shoot rays from the point
+  #pragma omp parallel for
   for (size_t i = 0; i < _sampling*_sampling; i++) {
     // grid random sampling
     float u = (i/_sampling)/(float)_sampling + ((0.5/_sampling) * rand()) / RAND_MAX;

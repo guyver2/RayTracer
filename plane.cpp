@@ -7,6 +7,8 @@ using namespace Eigen;
 
 Plane::Plane(std::vector<Vector3d> pts, std::string name, colorRGB col) :
              _points(pts){
+  _reflection = -1;
+  _refraction = -1;
   _name = name;
   _color = col;
   _plane = Hyperplane<double,3>::Through( _points[0],_points[1],_points[2]);

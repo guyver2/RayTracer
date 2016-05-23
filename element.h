@@ -12,6 +12,8 @@ class Element {
 public:
   std::string _name;
   colorRGB _color;
+  float _refraction;
+  float _reflection;
   virtual colorRGB col() {return _color;}
   virtual intersection intersect(const Line3d&, const Eigen::Vector3d &, const Eigen::Vector3d &)=0;
   virtual bool sameSide(const Eigen::Vector3d&, const Eigen::Vector3d&)=0;

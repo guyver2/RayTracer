@@ -7,7 +7,7 @@
     "focal": 0.035,
     "width": 0.025,
     "height": 0.025,
-    "subrays": 15
+    "subrays": 20
   },
 
   "lights":[
@@ -43,7 +43,7 @@
         [343.0,  560.0, 227.0]
       ],
       "color": [1,0.9,0.7],
-      "sampling":10
+      "sampling": 20
     }
 
   ],
@@ -114,6 +114,7 @@
       "type":"quad",
       "name":"back",
       "color": [1,1,1],
+      "reflection" : 0.8,
       "pts": [
         [0.0,   0.0, 560.0],
         [0.0, 560.0, 560.0],
@@ -126,6 +127,7 @@
       "type":"quad",
       "name":"right",
       "color": [0,1,0],
+      "reflection" : -1,
       "pts": [
         [0.0,   0.0, 560.0],
         [0.0,   0.0,   0.0],
@@ -138,6 +140,7 @@
       "type":"quad",
       "name":"left",
       "color": [1,0,0],
+      "reflection" : -1,
       "pts": [
         [560.0,   0.0,   0.0],
         [560.0,   0.0, 560.0],
@@ -269,8 +272,10 @@
       "status": true,
       "type":"sphere",
       "name":"sphere",
+      "reflection": 1,
+      "refraction":1.49,
       "color": [0.9,0.9,0.27],
-      "center": [180, 215, 150],
+      "center": [120, 200, 150],
       "radius": 50
     }
   ]

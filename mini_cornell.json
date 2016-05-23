@@ -6,7 +6,8 @@
     "dir":    [0, 0, 1],
     "focal": 0.035,
     "width": 0.025,
-    "height": 0.025
+    "height": 0.025,
+    "subrays": 5
   },
 
   "lights":[
@@ -29,10 +30,10 @@
       "name": "right light",
       "type": "spot",
       "position": [550, 250, 150],
-      "color": [0.9,0.4,0.4]
+      "color": [0.7,0.7,0.5]
     },
     {
-      "status": true,
+      "status": false,
       "name": "Area light",
       "type": "area",
       "pts": [
@@ -135,7 +136,7 @@
       "status": true,
       "type":"quad",
       "name":"left",
-      "color": [1,0,0],
+      "color": [1,1,1],
       "pts": [
         [560.0,   0.0,   0.0],
         [560.0,   0.0, 560.0],
@@ -159,8 +160,19 @@
       "status": true,
       "type":"sphere",
       "name":"sphere",
+      "reflection": 1,
       "color": [1,1,1],
-      "center": [250, 215, 400],
+      "center": [150, 215, 400],
+      "radius": 50
+    }
+    ,
+    {
+      "status": true,
+      "type":"sphere",
+      "name":"sphere",
+      "refraction": 1.4,
+      "color": [1,1,1],
+      "center": [350, 75, 400],
       "radius": 50
     }
   ]

@@ -145,6 +145,39 @@ std::pair<colorRGB, intersection> singleRay(const Vector3d &p0, const Vector3d &
 }
 
 
+
+std::pair<colorRGB, intersection> singleRay_rec(const Vector3d &p0, const Vector3d &p1, const Scene &scene, int depth=5){
+  Line3d line = Line3d::Through(p0, p1);
+  intersection pt = scene.intersect(line, p0, p1, true);
+  colorRGB resCol(0,0,0);
+  if (pt.valid()){
+    if (pt.element() == NULL) { // no physical element associated, means we hit a light
+      return std::make_pair(pt.col(), pt);
+    }
+    resCol = pt.col()*0.2;
+    // shoot direct shadow rays
+    for (const auto l : scene._lights){
+      //Spot* spot = (Spot*)l;
+      float sees = l->sees(pt, scene);
+      //double dist = 1-fabs(((pt.point()-spot->position()).norm())/800.0);
+      resCol = resCol + l->col()*pt.col()*sees;//*dist;
+    }
+    double d = scene._lights.size();
+    resCol = resCol / d;
+    if (pt.element()->_reflection > 0 && depth) {
+      Vector3d v = (p1-p0);
+      v.normalize();
+      Vector3d n = pt.element()->normal(pt.point());
+      Vector3d r = v - 2*(v.dot(n))*n;
+      std::pair<colorRGB, intersection> reflected = singleRay_rec(pt.point(),pt.point()+r, scene, depth-1);
+      resCol = resCol * (1-pt.element()->_reflection) + reflected.first*pt.element()->_reflection;
+    }
+  }
+  return std::make_pair(resCol, pt);
+}
+
+
+
 cv::Mat Camera::renderBounceOnce(const Scene &scene, int w, int h){
   double dx = _width/w;
   double dy = _height/h;
@@ -155,10 +188,10 @@ cv::Mat Camera::renderBounceOnce(const Scene &scene, int w, int h){
   for (size_t i = 0; i < w; i++) {
     #pragma omp parallel for
     for (size_t j = 0; j < h; j++) {
-      //std::cout << "pix " << nbpix++ << "/" << w*h << std::endl;
+      std::cout << "pix " << nbpix++ / float(w*h) << "\%" << std::endl;
       colorRGB resCol(0,0,0);
       Vector3d pix = screen_ori + Vector3d(dx*i, -dy*j, 0);
-      std::pair<colorRGB, intersection> res = singleRay(_center, pix, scene);
+      std::pair<colorRGB, intersection> res = singleRay_rec(_center, pix, scene);
       colorRGB primaryCol = res.first;
       intersection pt = res.second;
       if (pt.valid()){
@@ -180,7 +213,7 @@ cv::Mat Camera::renderBounceOnce(const Scene &scene, int w, int h){
             Vector3d randomRay = rot*hemisphereRandomRay(u, v);
             randomRay += pt.point();
 
-            std::pair<colorRGB, intersection> resRay = singleRay(pt.point(), randomRay, scene);
+            std::pair<colorRGB, intersection> resRay = singleRay_rec(pt.point(), randomRay, scene);
             secondaryCol = secondaryCol + resRay.first;
           }
           secondaryCol = secondaryCol / (_subrays*_subrays);
@@ -212,7 +245,7 @@ cv::Mat Camera::renderDirect(const Scene &scene, int w, int h){
     #pragma omp parallel for
     for (size_t j = 0; j < h; j++) {
       Vector3d pix = screen_ori + Vector3d(dx*i, -dy*j, 0);
-      std::pair<colorRGB, intersection> res = singleRay(_center, pix, scene);
+      std::pair<colorRGB, intersection> res = singleRay_rec(_center, pix, scene);
       colorRGB resCol = res.first;
       colorImg[3*(j*w+i)] = fmin(255,255*resCol.r);
       colorImg[3*(j*w+i)+1] = fmin(255,255*resCol.g);

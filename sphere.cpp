@@ -9,6 +9,8 @@ Sphere::Sphere(Vector3d center, float radius, std::string name, colorRGB col) :
              _center(center), _radius(radius){
   _name = name;
   _color = col;
+  _reflection = -1;
+  _refraction = -1;
 }
 
 Sphere::~Sphere(){}

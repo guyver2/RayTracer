@@ -39,7 +39,7 @@ int main(int argc, char const *argv[]) {
   imwrite("../depth.jpg", depthMap);
   /**/
 
-  //*
+  /*
   Mat colorImg = cam.renderDirect(cornellBox, SIZE_IMG, SIZE_IMG);
   cvtColor(colorImg, colorImg, CV_BGR2RGB);
   flip(colorImg, colorImg, 1);

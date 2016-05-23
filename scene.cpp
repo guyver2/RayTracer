@@ -12,6 +12,11 @@
 using namespace Eigen;
 using json = nlohmann::json;
 
+inline float clamp(float x, float lo, float hi){
+    return x < lo ? lo : (x > hi ? hi : x);
+}
+
+
 Scene::Scene(): _elements(std::vector<Element*>()),_lights(std::vector<Light*>()) {
 }
 
@@ -53,23 +58,36 @@ Scene::Scene(std::string filename): _elements(std::vector<Element*>()),
     // load elements
     for (const auto &eltData : dict["elements"]){
       bool onOff = eltData["status"];
-      if (!onOff) continue;
+      if (!onOff) continue; //############  FLAG
+      Element* elt = NULL;
+      auto col = eltData["color"];
+      float reflection = 0;
+      float refraction = 0;
+      auto refr = eltData.find("refraction");
+      if (refr != eltData.end()) refraction = *refr;
+      auto refl = eltData.find("reflection");
+      if (refl != eltData.end()) reflection = *refl;
+      reflection = clamp(reflection, 0, 1);
+      refraction = clamp(refraction, 0, 1);
+      std::string name = eltData["name"];
       if (eltData["type"] == "quad") {
         auto ptsdata = eltData["pts"];
-        auto col = eltData["color"];
-        std::string name = eltData["name"];
         std::vector<Vector3d> pts;
         for (const auto &pt : ptsdata) {
           pts.push_back(Vector3d(pt[0], pt[1], pt[2]));
         }
-        addElt(new Plane(pts, name, colorRGB(col[0], col[1], col[2])));
+        elt = new Plane(pts, name, colorRGB(col[0], col[1], col[2]));
+        elt->_reflection = reflection;
+        elt->_refraction = refraction;
+        addElt(elt);
       } else if (eltData["type"] == "sphere") {
-        auto col = eltData["color"];
-        std::string name = eltData["name"];
         auto centerData = eltData["center"];
         float radius = eltData["radius"];
         Vector3d center(centerData[0], centerData[1], centerData[2]);
-        addElt(new Sphere(center, radius, name, colorRGB(col[0], col[1], col[2])));
+        elt = new Sphere(center, radius, name, colorRGB(col[0], col[1], col[2]));
+        elt->_reflection = reflection;
+        elt->_refraction = refraction;
+        addElt(elt);
       } else {
         std::cout << "Cannot handle element type [" << eltData["type"] << "] yet." << std::endl;
       }
@@ -108,17 +126,18 @@ Scene::~Scene (){
 intersection Scene::intersect(const Line3d &line, const Vector3d &p0, const Vector3d &p1, bool includeLights) const{
   intersection res;
   // intersect physical object
-  for (auto &e : _elements){
-    intersection it = e->intersect(line, p0, p1);
-    //std::cout << e->_name << " " << d << std::endl;
+  #pragma omp parallel for
+  for (auto e = _elements.begin(); e < _elements.end(); e++){
+    intersection it = (*e)->intersect(line, p0, p1);
     if (it.valid()) {
       if (!res.valid() || res.depth() > it.depth()) res = it;
     }
   }
   if (includeLights){
     // intersect area lights
-    for (auto &l : _lights){
-      intersection it = l->intersect(line, p0, p1);
+    #pragma omp parallel for
+    for (auto l = _lights.begin(); l < _lights.end(); l++){
+      intersection it = (*l)->intersect(line, p0, p1);
       if (it.valid()) {
         if (!res.valid() || res.depth() > it.depth()) res = it;
       }
