@@ -9,7 +9,13 @@
 
 # Introduction:
 
-Basic Ray tracing software. Not much functionalities now but should get better over time :-)
+My modest attempt at ray tracing. 
+Current features include :
+	* Discrete and area light sources
+	* Monte-Carlo ray sampling
+	* Difuse shadows
+	* Mirrors
+	
 
 
 
