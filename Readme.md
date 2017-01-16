@@ -10,7 +10,7 @@
 # Introduction:
 
 My modest attempt at ray tracing. 
-Current features include :
+- Current features include :
 	* Discrete and area light sources
 	* Monte-Carlo ray sampling
 	* Difuse shadows
